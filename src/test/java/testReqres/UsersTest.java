@@ -1,10 +1,12 @@
 package testReqres;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import models.lombok.UserBodyRequestModel;
 import models.lombok.UserBodyResponseModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static helpers.CustomApiListener.withCustomTemplates;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
@@ -14,13 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UsersTest {
     @Test
     @DisplayName("Создание пользователя")
-    void createUsersTestName(){
+    void createUsersTestName() {
         UserBodyRequestModel data = new UserBodyRequestModel();
         data.setName("morpheus");
         data.setJob("leader");
 
-                UserBodyResponseModel response = given()
+        UserBodyResponseModel response = given()
                 .log().uri()
+                .log().headers()
+                .log().body()
+                .filter(withCustomTemplates())
                 .contentType(JSON)
                 .body(data)
                 .when()
@@ -35,9 +40,10 @@ public class UsersTest {
         assertThat(response.getId() != null);
         assertThat(response.getCreatedAt() != null);
     }
+
     @Test
     @DisplayName("Неверный формат создания пользователя")
-    void createUsersTestFail(){
+    void createUsersTestFail() {
 
         given()
                 .log().uri()
@@ -49,11 +55,11 @@ public class UsersTest {
                 .statusCode(415);
 
 
-
     }
+
     @Test
     @DisplayName("Получение пользователя по id")
-    void getUserId(){
+    void getUserId() {
         given()
                 .log().uri()
                 .when()
@@ -65,9 +71,10 @@ public class UsersTest {
                 .body("data.first_name", is("Janet"));
 
     }
+
     @Test
     @DisplayName("Пользователь не найден")
-    void getUserIdNotFound(){
+    void getUserIdNotFound() {
         given()
                 .log().uri()
                 .when()
@@ -78,6 +85,7 @@ public class UsersTest {
                 .statusCode(404);
 
     }
+
     @Test
     @DisplayName("Удаление пользователя")
     void deleteUserId() {
