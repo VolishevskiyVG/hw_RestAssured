@@ -1,31 +1,39 @@
 package testReqres;
 
+import models.lombok.UserBodyRequestModel;
+import models.lombok.UserBodyResponseModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class UsersTest {
     @Test
     @DisplayName("Создание пользователя")
     void createUsersTestName(){
-        String body = "{ \"name\": \"neo\", \"job\": \"manager\"}";
+        UserBodyRequestModel data = new UserBodyRequestModel();
+        data.setName("morpheus");
+        data.setJob("leader");
 
-        given()
+                UserBodyResponseModel response = given()
                 .log().uri()
                 .contentType(JSON)
-                .body(body)
+                .body(data)
                 .when()
                 .post("https://reqres.in/api/users")
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(201)
-                .body("name", is("neo"))
-                .body("job", is("manager"));
-
+                .extract().as(UserBodyResponseModel.class);
+        assertThat(response.getName()).isEqualTo("morpheus");
+        assertThat(response.getJob()).isEqualTo("leader");
+        assertThat(response.getId() != null);
+        assertThat(response.getCreatedAt() != null);
     }
     @Test
     @DisplayName("Неверный формат создания пользователя")
