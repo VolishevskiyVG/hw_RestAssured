@@ -1,6 +1,5 @@
 package testReqres;
 
-import io.qameta.allure.restassured.AllureRestAssured;
 import models.lombok.UserBodyRequestModel;
 import models.lombok.UserBodyResponseModel;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +10,9 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
+import static specs.CreateUserSpecs.userRequestFailSpec;
+import static specs.DeleteUserSpecs.DeleteUserRequestSpec;
+import static specs.GetUserSpecs.GetUserRequestSpec;
 
 
 public class UsersTest {
@@ -45,10 +47,9 @@ public class UsersTest {
     @DisplayName("Неверный формат создания пользователя")
     void createUsersTestFail() {
 
-        given()
-                .log().uri()
+        given(userRequestFailSpec)
                 .when()
-                .post("https://reqres.in/api/users")
+                .post("/users")
                 .then()
                 .log().status()
                 .log().body()
@@ -60,10 +61,9 @@ public class UsersTest {
     @Test
     @DisplayName("Получение пользователя по id")
     void getUserId() {
-        given()
-                .log().uri()
+        given(GetUserRequestSpec)
                 .when()
-                .get("https://reqres.in/api/users/2")
+                .get("users/2")
                 .then()
                 .log().status()
                 .log().body()
@@ -75,10 +75,9 @@ public class UsersTest {
     @Test
     @DisplayName("Пользователь не найден")
     void getUserIdNotFound() {
-        given()
-                .log().uri()
+        given(GetUserRequestSpec)
                 .when()
-                .get("https://reqres.in/api/users/464848")
+                .get("/users/464848")
                 .then()
                 .log().status()
                 .log().body()
@@ -89,10 +88,9 @@ public class UsersTest {
     @Test
     @DisplayName("Удаление пользователя")
     void deleteUserId() {
-        given()
-                .log().uri()
+        given(DeleteUserRequestSpec)
                 .when()
-                .delete("https://reqres.in/api/users/5")
+                .delete("/users/5")
                 .then()
                 .log().status()
                 .log().body()
